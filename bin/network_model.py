@@ -10,7 +10,7 @@ from keras.layers import Input, Convolution3D, Dense, Dropout, Flatten, Concaten
 from keras.utils import np_utils # utilities for one-hot encoding of ground truth values
 from load_data import load
 from preprocess import smooth_data,normalize
-from sklearn.cross_validation import train_test_split
+from metadata import prepare_metadata
 
 ###### get IDs and labels ######
 fn = '/home/yklocal/Downloads/OASIS3_noNA_ybin.csv'
@@ -62,7 +62,7 @@ test_set = np.zeros((X_test.shape[0], 1, X_test.shape[1],X_test.shape[2],X_test.
 for h in xrange(X_test.shape[0]):
     test_set[h][0][:][:][:] = X_test[h,:,:,:]
 
-print(X_train.shape)
+# print(X_train.shape)
 
 # inp = Input(shape=(X_train.shape[1], X_train.shape[2],X_train.shape[3],X_train.shape[4]))
 inp = Input(shape=(1, X_train0.shape[1],X_train0.shape[2],X_train0.shape[3]))
@@ -90,16 +90,17 @@ drop_5 = Dropout(drop_prob_1)(conv_5)
 
 flat = Flatten()(drop_5)
 hidden = Dense(hidden_size, activation='relu')(flat)
-drop_6 = Dropout(drop_prob_2, name='firstFC')(hidden)
+drop_6 = Dropout(drop_prob_2)(hidden)
 
-out = Dense(num_classes,activation='softmax')(drop_6)
+out = Dense(num_classes,activation='softmax', name='feat')(drop_6)
 
 model = Model(inputs=inp,outputs=out)
 
 intermediate_layer_model = Model(inputs=model.input,
-                                 outputs=model.get_layer('firstFC').output)
+                                 outputs=model.get_layer('feat').output) ### pull out features
 
-# intermediate_output = intermediate_layer_model.predict([X_train])
+intermediate_output = intermediate_layer_model.predict(train_set)
+intermediate_output_test = intermediate_layer_model.predict(test_set)
 
 
 
@@ -108,8 +109,17 @@ model.compile(loss='categorical_crossentropy',
              metrics=['accuracy'])
 
 # X_train_new, X_val_new, y_train_new,y_val_new = train_test_split(train_set, Y_train, test_size=0.2, random_state=4)
-print(Y_train.shape)
+# print(Y_train.shape)
 model.fit(train_set,Y_train,
          batch_size=batch_size,epochs=num_epochs,
          verbose=1, validation_data=(test_set, Y_test))
 model.evaluate(test_set, Y_test, verbose=1)
+
+
+############# prepare metadata #######
+demogfn = '/Users/yeunkim/Data/OASIS/csv/X_DataFrame2.csv'
+measures = '/Users/yeunkim/Data/OASIS/csv/Y_DataFrame.csv'
+
+metadata =  prepare_metadata(demogfn, measures,data)
+
+print(intermediate_output.shape)
