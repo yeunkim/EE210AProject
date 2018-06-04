@@ -25,7 +25,7 @@ from metadata import prepare_metadata
 
 fn = '/home/yklocal/Downloads/OASIS3_noNA_ybin.csv'
 dirimg = '/home/yklocal/Downloads/Original_cropped_pkl2/'
-dirjac = '/home/yklocal/'
+dirjac = '/home/yklocal/Downloads/Jac_cropped/'
 data = load(fn, dirimg, dirjac)
 Y_train0 = data.y_train0
 Y_test0 = data.y_test0

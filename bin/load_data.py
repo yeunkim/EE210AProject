@@ -94,7 +94,7 @@ class load(object):
             for file in files:
                 #       subjID.append(file.split('.')[0])
                 #       path = os.path.join(root,dirs)
-                filename = self.dirimg + file
+                filename = self.dirjac + file
 
                 if np.isin(file[0:9], self.y_train0_id):  ###
                     with open(filename, 'rb') as f:
