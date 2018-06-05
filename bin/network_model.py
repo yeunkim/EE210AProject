@@ -7,7 +7,7 @@ Runs Convolutional Neural Network
 import numpy as np
 from keras import optimizers
 from keras.models import Model # basic class for specifying and training a neural network
-from keras.layers import Input, Convolution3D, Dense, Dropout, Flatten, Concatenate, Merge, merge
+from keras.layers import Input, Convolution3D, Dense, Dropout, Flatten, Concatenate, Merge, merge, regularizers, BatchNormalization
 from keras.utils import np_utils # utilities for one-hot encoding of ground truth values
 from load_data import load
 from preprocess import preprocess_data
@@ -17,7 +17,7 @@ from metadata import prepare_metadata
 fn = '/home/yklocal/Downloads/OASIS3_noNA_ybin.csv'
 dirimg = '/home/yklocal/Downloads/Original_cropped_pkl2/'
 dirjac = '/home/yklocal/Downloads/Jac_cropped/'
-data = load(fn, dirimg, dirjac)
+data = load(fn, dirimg, dirjac, 128, 64, 64)
 Y_train0 = data.y_train0
 Y_test0 = data.y_test0
 
@@ -85,17 +85,17 @@ x = Concatenate([inp, jacinp])
 
 # conv_1_1 = Convolution3D(conv_depth_1, 7,7,7, padding='same',activation='relu',subsample=(2,2,2))(inp)
 # conv_1_2 = Convolution3D(conv_depth_1, 6,6,6, padding='same',activation='relu',subsample=(2,2,2))(inp)
-conv_1_3 = Convolution3D(conv_depth_1, 5,5,5, padding='same',activation='relu',subsample=(2,2,2))(inp)
+conv_1_3 = Convolution3D(conv_depth_1, 5,5,5, padding='same',activation='relu',subsample=(2,2,2), kernel_regularizer=regularizers.l1(0.3))(inp)
 
 # conv_1 = Concatenate([conv_1_1, conv_1_2, conv_1_3])
 # conv_1 = merge([conv_1_1, conv_1_2, conv_1_3], mode='concat', concat_axis=1)
 
 drop_1 = Dropout(drop_prob_1)(conv_1_3)
 
-conv_2 = Convolution3D(conv_depth_2, 5,5,5, padding='same',activation='relu',subsample=(2,2,2))(drop_1)
+conv_2 = Convolution3D(conv_depth_2, 5,5,5, padding='same',activation='relu',subsample=(2,2,2), kernel_regularizer=regularizers.l1(0.3))(drop_1)
 drop_2 = Dropout(drop_prob_1)(conv_2)
 
-conv_3 = Convolution3D(conv_depth_3, 5,5,5, padding='same',activation='relu',subsample=(2,2,2))(drop_2)
+conv_3 = Convolution3D(conv_depth_3, 5,5,5, padding='same',activation='relu',subsample=(2,2,2), kernel_regularizer=regularizers.l1(0.3))(drop_2)
 drop_3 = Dropout(drop_prob_1)(conv_3)
 #
 # conv_4 = Convolution3D(conv_depth_4, 3,3,3, padding='same',activation='relu',subsample=(2,2,2))(drop_3)
@@ -110,7 +110,9 @@ drop_3 = Dropout(drop_prob_1)(conv_3)
 flat = Flatten()(drop_3)
 # hidden = Dense(hidden_size, activation='relu')(flat)
 hidden = Dense(1028, activation='relu')(flat)
-drop_7 = Dropout(drop_prob_2)(hidden)
+norm = BatchNormalization()(hidden)
+
+drop_7 = Dropout(drop_prob_2)(norm)
 
 out = Dense(num_classes,activation='softmax', name='feat')(drop_7)
 
@@ -131,7 +133,7 @@ print(conv_2._keras_shape)
 # intermediate_output_test = intermediate_layer_model.predict(test_set)
 
 
-opt = optimizers.Adam(lr=0.01)
+opt = optimizers.Adam(lr=0.00001)
 model.compile(loss='binary_crossentropy',
              optimizer=opt,
              metrics=['accuracy', 'mse'])

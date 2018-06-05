@@ -10,7 +10,7 @@ import os
 
 class load(object):
 
-    def __init__(self, fn, dirimg, dirjac):
+    def __init__(self, fn, dirimg, dirjac, x, y, z):
         self.fn = fn
         self.dirimg = dirimg
         self.dirjac = dirjac
@@ -22,10 +22,13 @@ class load(object):
         self.test_data_matrix =[]
         self.jac_train_data_matrix = []
         self.jac_test_data_matrix =[]
+        self.x = x
+        self.y = y
+        self.z = z
 
         self.read_csv()
         self.load_img()
-        self.load_jacdet()
+        # self.load_jacdet()
 
     def read_csv(self):
         ### Partitioning demographic data : train vs test
@@ -58,8 +61,8 @@ class load(object):
         for root, dirs, files in os.walk(self.dirimg):
             num_train = self.y_train0_id.shape[0]  ###
             num_test = self.y_test0_id.shape[0]  ###
-            train_data_matrix = np.ones((num_train, 128, 64, 64))
-            test_data_matrix = np.ones((num_test, 128, 64, 64))
+            train_data_matrix = np.ones((num_train, self.x, self.y, self.z))
+            test_data_matrix = np.ones((num_test, self.x, self.y, self.z))
 
             train_i = 0
             test_i = 0
@@ -86,8 +89,8 @@ class load(object):
         for root, dirs, files in os.walk(self.dirjac):
             num_train = self.y_train0_id.shape[0]  ###
             num_test = self.y_test0_id.shape[0]  ###
-            jac_train_data_matrix = np.ones((num_train, 128, 64, 64))
-            jac_test_data_matrix = np.ones((num_test, 128, 64, 64))
+            jac_train_data_matrix = np.ones((num_train, self.x, self.y, self.z))
+            jac_test_data_matrix = np.ones((num_test, self.x, self.y, self.z))
 
             train_i = 0
             test_i = 0
