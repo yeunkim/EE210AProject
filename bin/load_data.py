@@ -28,7 +28,7 @@ class load(object):
 
         self.read_csv()
         self.load_img()
-        # self.load_jacdet()
+        self.load_jacdet()
 
     def read_csv(self):
         ### Partitioning demographic data : train vs test
@@ -40,14 +40,14 @@ class load(object):
         NC = newdemog["Subject"][newdemog["y_bin"] == 0]
         AD = newdemog["Subject"][newdemog["y_bin"] == 1]
 
-        y_test0_nc = NC[0:25]
-        y_test0_ad = AD[0:25]
+        y_test0_nc = NC[0:15]
+        y_test0_ad = AD[0:15]
 
         y_test0_id = np.concatenate([y_test0_nc.values, y_test0_ad.values], axis=0)  # ID for test
-        y_test0 = np.concatenate((np.zeros((1, 25)), np.ones((1, 25))), axis=1).flatten()
+        y_test0 = np.concatenate((np.zeros((1, 15)), np.ones((1, 15))), axis=1).flatten()
 
-        y_train0_nc = NC[25:]
-        y_train0_ad = AD[25:]
+        y_train0_nc = NC[15:]
+        y_train0_ad = AD[15:]
 
         y_train0_id = np.concatenate([y_train0_nc.values, y_train0_ad.values], axis=0)  # ID for train
         y_train0 = np.concatenate((np.zeros((1, len(y_train0_nc))), np.ones((1, len(y_train0_ad)))), axis=1).flatten()

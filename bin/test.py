@@ -22,13 +22,14 @@ from metadata import prepare_metadata
 
 
 ###### load in data ######
-
+###### get IDs and labels ######
 fn = '/home/yklocal/Downloads/OASIS3_noNA_ybin.csv'
 dirimg = '/home/yklocal/Downloads/Original_cropped_pkl2/'
 dirjac = '/home/yklocal/Downloads/Jac_cropped/'
-data = load(fn, dirimg, dirjac)
+data = load(fn, dirimg, dirjac, 128, 64, 64)
 Y_train0 = data.y_train0
 Y_test0 = data.y_test0
+
 
 
 ###### load in data ######
