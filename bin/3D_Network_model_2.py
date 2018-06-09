@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Runs Convolutional Neural Network
+ Runs the 3D CNN to classify Alzheimer’s(add in small description of model 2)
 """
 
 
@@ -49,7 +49,7 @@ X_test, Y_test = X_test0, Y_test0
 
 ####Some Hyperparameters
 batch_size = 15
-num_epochs = 10
+num_epochs = 50
 num_classes = 2
 
 conv_depth_1 = 45
@@ -116,7 +116,7 @@ x = concatenate([inp, jacinp])
 # conv_1_1 = Convolution3D(conv_depth_1, 7,7,7, padding='same',activation='relu',subsample=(2,2,2))(inp)
 # conv_1_2 = Convolution3D(conv_depth_1, 6,6,6, padding='same',activation='relu',subsample=(2,2,2))(inp)
 conv_1_3 = Convolution3D(conv_depth_1, 5,5,5, padding='same',
-                         activation='relu',subsample=(2,2,2),
+                         activation='relu',subsample=(1,1,1),
                          kernel_regularizer=regularizers.l1(0.3),
                          bias_initializer=initializers.Constant(0.01),
                          kernel_initializer=initializers.glorot_normal(seed=1)
@@ -129,7 +129,7 @@ conv_1_3 = Convolution3D(conv_depth_1, 5,5,5, padding='same',
 drop_1 = Dropout(drop_prob_1)(conv_1_3)
 
 conv_2 = Convolution3D(conv_depth_2, 5,5,5, padding='same',
-                       activation='relu',subsample=(2,2,2),
+                       activation='relu',subsample=(1,1,1),
                        kernel_regularizer=regularizers.l1(0.3),
                        bias_initializer=initializers.Constant(0.01),
                        kernel_initializer=initializers.glorot_normal(seed=1)
@@ -137,10 +137,10 @@ conv_2 = Convolution3D(conv_depth_2, 5,5,5, padding='same',
                        )(drop_1)
 drop_2 = Dropout(drop_prob_1)(conv_2)
 
-#max1 = MaxPool3D((8,8,8))(drop_2)
+max1 = MaxPool3D((8,8,8))(drop_2)
 
 conv_3 = Convolution3D(conv_depth_3, 5,5,5, padding='same',
-                       activation='relu',subsample=(2,2,2),
+                       activation='relu',subsample=(1,1,1),
                        bias_initializer=initializers.Constant(0.01),
                        kernel_regularizer=regularizers.l1(0.3),
                        kernel_initializer=initializers.glorot_normal(seed=1)
@@ -150,7 +150,7 @@ conv_3 = Convolution3D(conv_depth_3, 5,5,5, padding='same',
 drop_3 = Dropout(drop_prob_1)(conv_3)
 #
 conv_4 = Convolution3D(conv_depth_4, 3,3,3, padding='same',
-                       activation='relu',subsample=(2,2,2),
+                       activation='relu',subsample=(1,1,1),
                        bias_initializer=initializers.Constant(0.01),
                        kernel_regularizer=regularizers.l1(0.3),
                        kernel_initializer=initializers.glorot_normal(seed=1)
@@ -158,7 +158,7 @@ conv_4 = Convolution3D(conv_depth_4, 3,3,3, padding='same',
                        )(drop_3)
 drop_4 = Dropout(drop_prob_1)(conv_4)
 
-# max2 = MaxPool3D((4,4,4))(drop_4)
+max2 = MaxPool3D((4,4,4))(drop_4)
 #
 # conv_5 = Convolution3D(conv_depth_5, 3,3,3, padding='same',activation='relu',subsample=(2,2,2))(drop_4)
 # drop_5 = Dropout(drop_prob_1)(conv_5)
@@ -166,7 +166,7 @@ drop_4 = Dropout(drop_prob_1)(conv_4)
 # conv_6 = Convolution3D(conv_depth_5, 3,3,3, padding='same',activation='relu',subsample=(2,2,2))(drop_5)
 # drop_6 = Dropout(drop_prob_1)(conv_6)
 
-flat = Flatten()(drop_4)
+flat = Flatten()(max2)
 # hidden = Dense(hidden_size, activation='relu')(flat)
 hidden = Dense(512, activation='relu',
                bias_initializer=initializers.Constant(0.01),
@@ -200,7 +200,7 @@ model = Model(inputs=[inp, jacinp],outputs=out)
 # intermediate_output_test = intermediate_layer_model.predict(test_set)
 
 
-opt = optimizers.Adam(lr=0.000001)
+opt = optimizers.Adam(lr=0.00005)
 model.compile(loss='binary_crossentropy',
              optimizer=opt,
              metrics=['accuracy', 'mse'])
@@ -232,7 +232,7 @@ print(model.evaluate([test_set, X_test_jac], Y_test, verbose=1))
 # print('\n now predict')
 print(model.predict([test_set, X_test_jac]))
 
-modelname = '3epochs'
+modelname = 'Model2'
 model.save("oasis_{0}.h5".format(modelname))
 
 ############# prepare metadata #######
