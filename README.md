@@ -23,11 +23,11 @@ http://users.bmap.ucla.edu/~yeunkim/OASIS/cropped/Original_cropped_pkl2/
 
 ## Scripts: ##
 
-* *3D_Network_model_1.py* : Runs the 3D CNN to classify Alzheimer’s(add in small description of model 1).
+* *3D_Network_model_1.py* : Runs the 3D CNN to classify Alzheimer’s (refer to slide number 5 in pptx).
 
-* *3D_Network_model_2.py* : Runs the 3D CNN to classify Alzheimer’s(add in small description of model 2).
+* *3D_Network_model_2.py* : Runs the 3D CNN to classify Alzheimer’s (refer to slide number 6 in pptx).
 
-* *2D_Network_model*: Runs the 2D CNN architecture to classify Alzheimer’s. This architecture combines CNN extracted features with SVM classifier. 
+* *2D_Network_model.py*: Runs the 2D CNN architecture to classify Alzheimer’s. This architecture combines CNN extracted features with SVM classifier.
 
 ## Miscellaneous scripts: ##
 * *convert.sh* : Converts the ANALYZE files into NIfTI format.
